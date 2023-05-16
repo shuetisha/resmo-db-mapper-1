@@ -1,0 +1,75 @@
+package config
+
+import (
+	"errors"
+	"flag"
+	"fmt"
+	"github.com/spf13/viper"
+	"log"
+	"os"
+)
+
+type Config struct {
+	URL         string
+	IngestKey   string
+	Version     string
+	DSN         string
+	Schedule    string
+	ContextTime string
+}
+
+func (c *Config) Validate() error {
+	//if len(c.IngestKey) != 36 {
+	//	return errors.New("ingest key length is wrong")
+	//}
+
+	if c.DSN == "" {
+		return errors.New("datasource name is not set")
+	}
+
+	return nil
+}
+
+func (c *Config) ReadConfig(ver string) error {
+	viper.SetConfigName("config")
+	viper.AddConfigPath(".")
+
+	if err := viper.ReadInConfig(); err != nil {
+		log.Println("failed to read config:", err)
+		log.Println("will try to read config from command line arguments")
+	}
+
+	// Check if config variables are set (for command line runner)
+	flag.StringVar(&c.Schedule, "schedule", "", "schedule for running queries")
+	flag.StringVar(&c.ContextTime, "contextTime", "", "timeout duration for connections")
+	flag.StringVar(&c.DSN, "datasourceName", "", "database datasource name")
+	flag.StringVar(&c.IngestKey, "ingestKey", "", "ingestKey of the integration")
+
+	// Check if environment variables are set (for Docker run version)
+	if envSchedule := os.Getenv("SCHEDULE"); envSchedule != "" {
+		c.Schedule = envSchedule
+	}
+	if envContextTime := os.Getenv("CONTEXT_TIME"); envContextTime != "" {
+		c.ContextTime = envContextTime
+	}
+	if envDSN := os.Getenv("DATASOURCE_NAME"); envDSN != "" {
+		c.DSN = envDSN
+	}
+	if envIngestKey := os.Getenv("INGEST_KEY"); envIngestKey != "" {
+		c.IngestKey = envIngestKey
+	}
+
+	flag.Parse()
+
+	c.Version = ver
+
+	if err := viper.Unmarshal(c); err != nil {
+		return fmt.Errorf("failed to unmarshal config: %w", err)
+	}
+
+	if err := c.Validate(); err != nil {
+		return fmt.Errorf("config is not valid: %w", err)
+	}
+
+	return nil
+}
