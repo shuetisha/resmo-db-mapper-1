@@ -11,7 +11,7 @@ builds:
       - darwin
 dockers:
   - image_templates:
-      - shuetisha/resmo-db-mapper
+      - shuetisha/resmo-db-mapper-1
     dockerfile: Dockerfile
 archives:
   - format: tar.gz
