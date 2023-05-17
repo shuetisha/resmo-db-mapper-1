@@ -11,6 +11,7 @@ builds:
       - darwin
     main: ./resmo-db-mapper
     binary: resmo-db-mapper
+
 dockers:
   - image_templates:
       - shuetisha/resmo-db-mapper-1
