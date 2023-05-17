@@ -18,9 +18,9 @@ type Config struct {
 }
 
 func (c *Config) Validate() error {
-	//if len(c.IngestKey) != 36 {
-	//	return errors.New("ingest key length is wrong")
-	//}
+	if c.IngestKey != "" {
+		return errors.New("ingest key is not set")
+	}
 
 	if c.DSN == "" {
 		return errors.New("datasource name is not set")

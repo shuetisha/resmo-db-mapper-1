@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"resmo-db-mapper/pkg/config"
 )
 
@@ -23,10 +24,15 @@ func Ingest(ctx context.Context, config config.Config, driverType string, resour
 		return fmt.Errorf("error creating request: %v", err)
 	}
 
+	dbUrl, err := extractDomainAndPort(config.DSN)
+	if err != nil {
+		return fmt.Errorf("error while extracting domain and port from DSN: %w", err)
+	}
+
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Ingest-Key", config.IngestKey)
 	req.Header.Set("Resmo-Database-Agent", config.Version)
-	req.Header.Set("DB-URL", config.DSN)
+	req.Header.Set("DB-URL", dbUrl)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -37,4 +43,20 @@ func Ingest(ctx context.Context, config config.Config, driverType string, resour
 	defer resp.Body.Close()
 
 	return nil
+}
+
+func extractDomainAndPort(urlStr string) (string, error) {
+	uri, err := url.Parse(urlStr)
+	if err != nil {
+		return "", fmt.Errorf("invalid URL format for given URL: %s", urlStr)
+	}
+
+	domain := uri.Hostname()
+	port := uri.Port()
+
+	if port != "" {
+		return fmt.Sprintf("%s:%s", domain, port), nil
+	}
+
+	return domain, nil
 }
