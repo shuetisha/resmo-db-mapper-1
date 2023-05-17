@@ -107,7 +107,7 @@ func getDatabaseType(connectionString string) (string, error) {
 	var dbType string
 
 	if strings.HasPrefix(connectionString, "postgres://") || strings.HasPrefix(connectionString, "postgresql://") {
-		dbType = "postgresql"
+		dbType = "postgres"
 	} else if strings.HasPrefix(connectionString, "mongodb://") {
 		dbType = "mongo"
 	} else if strings.HasPrefix(connectionString, "clickhouse://") {

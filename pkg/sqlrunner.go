@@ -16,7 +16,7 @@ func RunSQLDatabaseQueries(ctx context.Context, config config.Config, dbType str
 	switch dbType {
 	case "mysql":
 		queries = mysqlQueries
-	case "postgresql":
+	case "postgres":
 		queries = postgresQueries
 	case "clickhouse":
 		queries = clickhouseQueries
