@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"log"
-	"os"
 )
 
 type Config struct {
@@ -44,21 +43,6 @@ func (c *Config) ReadConfig(ver string) error {
 	flag.StringVar(&c.ContextTime, "contextTime", "", "timeout duration for connections")
 	flag.StringVar(&c.DSN, "datasourceName", "", "database datasource name")
 	flag.StringVar(&c.IngestKey, "ingestKey", "", "ingestKey of the integration")
-
-	// Check if environment variables are set (for Docker run version)
-	if envSchedule := os.Getenv("SCHEDULE"); envSchedule != "" {
-		c.Schedule = envSchedule
-	}
-	if envContextTime := os.Getenv("CONTEXT_TIME"); envContextTime != "" {
-		c.ContextTime = envContextTime
-	}
-	if envDSN := os.Getenv("DATASOURCE_NAME"); envDSN != "" {
-		c.DSN = envDSN
-	}
-	if envIngestKey := os.Getenv("INGEST_KEY"); envIngestKey != "" {
-		c.IngestKey = envIngestKey
-	}
-
 	flag.Parse()
 
 	c.Version = ver
