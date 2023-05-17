@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"resmo-db-mapper/pkg/config"
 )
@@ -17,6 +18,7 @@ func Ingest(ctx context.Context, config config.Config, driverType string, resour
 	}
 
 	req, err := http.NewRequestWithContext(ctx, "POST", fmt.Sprintf(url, driverType, resourceKey), bytes.NewBufferString(string(data)))
+	log.Println(req)
 	if err != nil {
 		return fmt.Errorf("error creating request: %v", err)
 	}
