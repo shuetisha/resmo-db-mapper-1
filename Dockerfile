@@ -1,4 +1,4 @@
 FROM alpine:latest
-COPY resmo-db-mapper /resmo-db-mapper
+COPY resmo-db-mapper /resmo-db-mapper/resmo-db-mapper
 WORKDIR "/resmo-db-mapper"
 ENTRYPOINT ["/resmo-db-mapper/resmo-db-mapper"]
