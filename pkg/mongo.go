@@ -14,10 +14,12 @@ import (
 
 func RunMongoQueries(ctx context.Context, config config.Config, dbType string) error {
 	opts := options.Client().ApplyURI(config.DSN)
+	log.Printf("connecting to database: %s\n", config.DSN)
 	client, err := mongo.Connect(ctx, opts)
 	if err != nil {
 		return fmt.Errorf("error connecting to MongoDB: %w", err)
 	}
+	log.Printf("connected to database successfully\n")
 	defer func() {
 		if err = client.Disconnect(ctx); err != nil {
 			log.Printf("error disconnecting from MongoDB: %w", err)

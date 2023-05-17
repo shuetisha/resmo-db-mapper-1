@@ -24,12 +24,12 @@ func RunSQLDatabaseQueries(ctx context.Context, config config.Config, dbType str
 		return fmt.Errorf("unsupported database type: %s", dbType)
 	}
 
-	log.Println("opening connection")
+	log.Printf("connecting to database: %s\n", config.DSN)
 	db, err := sqlx.Open(dbType, config.DSN)
-	log.Printf("after connection")
 	if err != nil {
 		return fmt.Errorf("failed to connect to database: %w", err)
 	}
+	log.Printf("connected to database successfully\n")
 	defer func(db *sqlx.DB) {
 		err := db.Close()
 		if err != nil {

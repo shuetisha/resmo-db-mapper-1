@@ -26,21 +26,30 @@ func main() {
 func realMain() error {
 	var config config.Config
 	err := config.ReadConfig(version)
-	fmt.Println(config)
 	if err != nil {
 		return fmt.Errorf("error while reading config : %w", err)
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+
+	ctxDur, err := time.ParseDuration(config.ContextTime)
+	if err != nil {
+		log.Printf("failed to parse the context duration from the configuration: %w. The context timeout duration is set to 10 seconds\n", err)
+		ctxDur = 10 * time.Second
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), ctxDur)
 	defer cancel()
 
-	log.Println("config read successfully, will start to run queries")
+	log.Printf("config: %s read successfully, will start to run queries\n", config)
 
 	dbType, err := getDatabaseType(config.DSN)
 	if err != nil {
 		return fmt.Errorf("error while getting database type from DSN: %w", err)
 	}
 	if config.Schedule == "" {
-		runQueries(ctx, config, dbType)
+		err := runQueries(ctx, config, dbType)
+		if err != nil {
+			return fmt.Errorf("error while running queries: %w", err)
+		}
 		log.Println("database resources ingested successfully")
 		return nil
 	}
@@ -52,16 +61,12 @@ func realMain() error {
 	ticker := time.NewTicker(dur)
 	defer ticker.Stop()
 
-	ctxDur, err := time.ParseDuration(config.ContextTime)
-	if err != nil {
-		return fmt.Errorf("could not parse context duration from config: %w", err)
-	}
 	for range ticker.C {
 		log.Println("running queries again with schedule: ", config.Schedule)
 		ctx, cancel := context.WithTimeout(context.Background(), ctxDur)
 		err := runQueries(ctx, config, dbType)
 		if err != nil {
-			return err
+			return fmt.Errorf("error while running queries: %w", err)
 		}
 		cancel()
 	}
@@ -70,35 +75,7 @@ func realMain() error {
 	return nil
 }
 
-//func readConfig(config *config.Config) error {
-//	viper.SetConfigName("config")
-//	viper.AddConfigPath(".")
-//
-//	if err := viper.ReadInConfig(); err != nil {
-//		log.Println("failed to read config:", err)
-//		log.Println("will try to read config from command line arguments")
-//	}
-//
-//	flag.StringVar(&config.Schedule, "schedule", "", "schedule for running queries")
-//	flag.StringVar(&config.DSN, "datasourceName", "", "database datasource name")
-//	flag.StringVar(&config.IngestKey, "ingestKey", "", "ingestKey of the integration")
-//	flag.StringVar(&config.URL, "url", "", "url for data to send to")
-//	flag.Parse()
-//
-//	config.Version = version
-//
-//	if err := viper.Unmarshal(&config); err != nil {
-//		return fmt.Errorf("failed to unmarshal config: %w", err)
-//	}
-//	if err := config.Validate(); err != nil {
-//		return fmt.Errorf("config is not valid: %w", err)
-//
-//	}
-//	return nil
-//}
-
 func runQueries(ctx context.Context, config config.Config, dbType string) error {
-	log.Printf("config: %s, dbType:%s\n", config, dbType)
 	switch dbType {
 	case "mongo":
 		err := pkg.RunMongoQueries(ctx, config, dbType)
