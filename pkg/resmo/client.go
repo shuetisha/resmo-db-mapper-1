@@ -11,7 +11,6 @@ import (
 
 func Ingest(ctx context.Context, config config.Config, driverType string, resourceKey, results interface{}) error {
 	url := "https://id.dev.resmo.io:8443/integration/%s/ingest/%s"
-
 	data, err := json.Marshal(results)
 	if err != nil {
 		return fmt.Errorf("error marshaling %s results: %w", resourceKey, err)
