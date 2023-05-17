@@ -24,7 +24,9 @@ func RunSQLDatabaseQueries(ctx context.Context, config config.Config, dbType str
 		return fmt.Errorf("unsupported database type: %s", dbType)
 	}
 
+	log.Println("opening connection")
 	db, err := sqlx.Open(dbType, config.DSN)
+	log.Printf("after connection")
 	if err != nil {
 		return fmt.Errorf("failed to connect to database: %w", err)
 	}

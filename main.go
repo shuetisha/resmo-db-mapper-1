@@ -59,7 +59,10 @@ func realMain() error {
 	for range ticker.C {
 		log.Println("running queries again with schedule: ", config.Schedule)
 		ctx, cancel := context.WithTimeout(context.Background(), ctxDur)
-		runQueries(ctx, config, dbType)
+		err := runQueries(ctx, config, dbType)
+		if err != nil {
+			return err
+		}
 		cancel()
 	}
 
@@ -94,13 +97,22 @@ func realMain() error {
 //	return nil
 //}
 
-func runQueries(ctx context.Context, config config.Config, dbType string) {
+func runQueries(ctx context.Context, config config.Config, dbType string) error {
+	log.Printf("config: %s, dbType:%s\n", config, dbType)
 	switch dbType {
 	case "mongo":
-		pkg.RunMongoQueries(ctx, config, dbType)
+		err := pkg.RunMongoQueries(ctx, config, dbType)
+		if err != nil {
+			return fmt.Errorf("mongo runner error: %w", err)
+		}
 	default:
-		pkg.RunSQLDatabaseQueries(ctx, config, dbType)
+		err := pkg.RunSQLDatabaseQueries(ctx, config, dbType)
+		if err != nil {
+			return fmt.Errorf("sql runner error: %w", err)
+		}
 	}
+
+	return nil
 }
 
 func getDatabaseType(connectionString string) (string, error) {
