@@ -9,7 +9,7 @@ builds:
       - linux
       - windows
       - darwin
-    main: ./main
+    main: .
     binary: resmo-db-mapper
 
 dockers:
