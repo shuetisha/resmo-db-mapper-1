@@ -10,7 +10,7 @@ import (
 )
 
 func Ingest(ctx context.Context, config config.Config, driverType string, resourceKey, results interface{}) error {
-	url := "https://host.docker.internal:9090/integration/%s/ingest/%s"
+	url := "http://host.docker.internal:9090/integration/%s/ingest/%s"
 
 	data, err := json.Marshal(results)
 	if err != nil {
