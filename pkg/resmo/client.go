@@ -11,14 +11,17 @@ import (
 )
 
 func Ingest(ctx context.Context, config config.Config, driverType string, resourceKey, results interface{}) error {
-	url := "https://id.dev.resmo.io:8443/integration/%s/ingest/%s"
+	ingestUrl := "https://id.resmo.app:443/integration/%s/ingest/%s"
+	if config.DomainOverride != "" {
+		ingestUrl = "https://" + config.DomainOverride + "/integration/%s/ingest/%s"
+	}
 
 	data, err := json.Marshal(results)
 	if err != nil {
 		return fmt.Errorf("error marshaling %s results: %w", resourceKey, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, "POST", fmt.Sprintf(url, driverType, resourceKey), bytes.NewBufferString(string(data)))
+	req, err := http.NewRequestWithContext(ctx, "POST", fmt.Sprintf(ingestUrl, driverType, resourceKey), bytes.NewBufferString(string(data)))
 
 	if err != nil {
 		return fmt.Errorf("error creating request: %v", err)

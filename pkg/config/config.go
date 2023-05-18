@@ -4,17 +4,18 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/spf13/viper"
+	"os"
 )
 
 type Config struct {
-	URL         string
-	IngestKey   string
-	Version     string
-	DSN         string
-	Schedule    string
-	ContextTime string
-	ConfigPath  string
+	URL            string
+	IngestKey      string
+	Version        string
+	DSN            string
+	Schedule       string
+	ContextTime    string
+	ConfigPath     string
+	DomainOverride string
 }
 
 func (c *Config) Validate() error {
@@ -37,6 +38,7 @@ func (c *Config) ReadConfig(ver string) error {
 	flag.StringVar(&c.DSN, "datasourceName", "", "database datasource name")
 	flag.StringVar(&c.IngestKey, "ingestKey", "", "ingestKey of the integration")
 	flag.StringVar(&c.ConfigPath, "configPath", "", "absolute path of the config")
+	flag.StringVar(&c.DomainOverride, "domainOverride", "", "domain url for ingesting")
 
 	flag.Parse()
 
@@ -48,20 +50,8 @@ func (c *Config) ReadConfig(ver string) error {
 		return nil
 	}
 
-	viper.SetConfigName("resmo-db-mapper-config")
-	viper.AddConfigPath(".")
-
-	if c.ConfigPath != "" {
-		viper.AddConfigPath(c.ConfigPath)
-	}
-
-	if err := viper.ReadInConfig(); err != nil {
-		return fmt.Errorf("failed to read config: %w", err)
-	}
-
-	if err := viper.Unmarshal(c); err != nil {
-		return fmt.Errorf("failed to unmarshal config: %w", err)
-	}
+	c.DSN = os.Getenv("DSN")
+	c.IngestKey = os.Getenv("INGEST_KEY")
 
 	if err := c.Validate(); err != nil {
 		return fmt.Errorf("config is not valid: %w", err)
