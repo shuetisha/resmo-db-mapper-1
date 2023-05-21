@@ -14,7 +14,7 @@ builds:
 
 dockers:
   - image_templates:
-      - shuetisha/resmo-db-mapper-1
+      - ["ghcr.io/shuetisha/resmo-db-mapper-1:{{ .Version }}"]
     dockerfile: Dockerfile
 archives:
   - format: tar.gz
