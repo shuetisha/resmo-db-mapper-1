@@ -13,8 +13,7 @@ type Config struct {
 	Version        string
 	DSN            string
 	Schedule       string
-	ContextTime    string
-	ConfigPath     string
+	Timeout        string
 	DomainOverride string
 }
 
@@ -34,10 +33,9 @@ func (c *Config) ReadConfig(ver string) error {
 	c.Version = ver
 
 	flag.StringVar(&c.Schedule, "schedule", "", "schedule for running queries")
-	flag.StringVar(&c.ContextTime, "contextTime", "", "timeout duration for connections")
-	flag.StringVar(&c.DSN, "datasourceName", "", "database datasource name")
+	flag.StringVar(&c.Timeout, "contextTime", "", "timeout duration for connections")
+	flag.StringVar(&c.DSN, "dsn", "", "database datasource name")
 	flag.StringVar(&c.IngestKey, "ingestKey", "", "ingestKey of the integration")
-	flag.StringVar(&c.ConfigPath, "configPath", "", "absolute path of the config")
 	flag.StringVar(&c.DomainOverride, "domainOverride", "", "domain url for ingesting")
 
 	flag.Parse()

@@ -45,7 +45,7 @@ func RunSQLDatabaseQueries(ctx context.Context, config config.Config, dbType str
 		data, err := QueryDBData(ctx, db, query.values, query.query)
 		if err != nil {
 			// todo think about fail situation
-			log.Printf("failed to map data for %s: %w", query.name, err)
+			log.Printf("failed to map data for %s: %s", query.name, err)
 			continue
 		}
 
@@ -80,7 +80,7 @@ func QueryDBData(ctx context.Context, db *sqlx.DB, dest interface{}, query strin
 		item := reflect.New(reflect.TypeOf(dest).Elem().Elem()).Interface()
 		err = rows.StructScan(item)
 		if err != nil {
-			log.Printf("failed to scan row: %w", err)
+			log.Printf("failed to scan row: %s", err)
 			continue
 		}
 		destValue.Set(reflect.Append(destValue, reflect.ValueOf(item).Elem()))

@@ -22,7 +22,7 @@ func RunMongoQueries(ctx context.Context, config config.Config, dbType string) e
 	log.Printf("connected to database successfully\n")
 	defer func() {
 		if err = client.Disconnect(ctx); err != nil {
-			log.Printf("error disconnecting from MongoDB: %w", err)
+			log.Printf("error disconnecting from MongoDB: %s", err)
 		}
 	}()
 

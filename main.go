@@ -30,9 +30,9 @@ func realMain() error {
 		return fmt.Errorf("error while reading config : %w", err)
 	}
 
-	ctxDur, err := time.ParseDuration(config.ContextTime)
+	ctxDur, err := time.ParseDuration(config.Timeout)
 	if err != nil {
-		log.Printf("failed to parse the context duration from the configuration: %w. The context timeout duration is set to 10 seconds\n", err)
+		log.Printf("failed to parse the context duration from the configuration: %s. The context timeout duration is set to 10 seconds\n", err)
 		ctxDur = 10 * time.Second
 	}
 
