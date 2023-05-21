@@ -27,8 +27,8 @@ jobs:
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
-          username: ${{ github.DCOKERHUB_USERNAME }}
-          password: ${{ github.DOCKERHUB_TOKEN }}
+          username: ${{ secrets.DCOKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
         name: Set up Go
         uses: actions/setup-go@v4
