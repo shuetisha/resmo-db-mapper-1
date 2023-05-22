@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 )
 
@@ -48,8 +49,10 @@ func (c *Config) ReadConfig(ver string) error {
 		return nil
 	}
 
+	log.Printf("can not find config from flags, looking for environment variables DSN & RESMO_INGEST_KEY")
+
 	c.DSN = os.Getenv("DSN")
-	c.IngestKey = os.Getenv("INGEST_KEY")
+	c.IngestKey = os.Getenv("RESMO_INGEST_KEY")
 
 	if err := c.Validate(); err != nil {
 		return fmt.Errorf("config is not valid: %w", err)
