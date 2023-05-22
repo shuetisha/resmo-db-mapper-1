@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
 	"net/url"
 	"resmo-db-mapper/pkg/config"
@@ -47,19 +48,20 @@ func Ingest(ctx context.Context, config config.Config, driverType string, resour
 
 	return nil
 }
-
 func extractDomainAndPort(urlStr string) (string, error) {
 	uri, err := url.Parse(urlStr)
 	if err != nil {
 		return "", fmt.Errorf("invalid URL format for given URL: %s", urlStr)
 	}
 
-	domain := uri.Hostname()
-	port := uri.Port()
-
-	if port != "" {
-		return fmt.Sprintf("%s:%s", domain, port), nil
+	host, port, err := net.SplitHostPort(uri.Host)
+	if err != nil {
+		return "", fmt.Errorf("failed to split host and port: %w", err)
 	}
 
-	return domain, nil
+	if port != "" {
+		return fmt.Sprintf("%s:%s", host, port), nil
+	}
+
+	return host, nil
 }
